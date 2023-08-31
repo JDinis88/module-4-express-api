@@ -78,12 +78,31 @@ app.get('/cars',async (req,res)=>{
 app.post('/cars', async (req, res) => {
   try{
     const {make,model,year} = req.body;
-    console.log(make,model,year);
     const query = await req.db.query(
       `INSERT INTO car (make, model, year)
       VALUES (:make,:model,:year);`,
       {
         make,model,year
+      }
+    )
+    res.json({success: true, message: query[0], data: null})
+  }
+  catch (err){
+    res.json({success: false, message: err, data: null})
+  }
+});
+
+// Updates a car in the database based on the id from the URL
+app.put('/cars/:id', async (req, res) => {
+  try{
+    const {make,model,year} = req.body;
+    const {id} = req.params
+    const query = await req.db.query(
+      `UPDATE car
+      SET make = :make , model = :model , year = :year
+      WHERE car.id = :id`,
+      {
+        make,model,year,id
       }
     )
     res.json({success: true, message: query[0], data: null})
