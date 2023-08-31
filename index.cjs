@@ -112,6 +112,25 @@ app.put('/cars/:id', async (req, res) => {
   }
 });
 
+//Deletes a car in the database based on the id from the URL, by setting its deleted flag to true(so it can be recovered later if needed)
+app.delete('/cars/:id', async (req, res) => {
+  try{
+    const {id} = req.params
+    const query = await req.db.query(
+      `UPDATE car
+      SET deleted_flag = 1
+      WHERE car.id = :id`,
+      {
+        id
+      }
+    )
+    res.json({success: true, message: query[0], data: null})
+  }
+  catch (err){
+    res.json({success: false, message: err, data: null})
+  }
+});
+
 
 app.post('/register', async function (req, res) {
   try {
