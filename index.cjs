@@ -64,7 +64,8 @@ app.get('/', (req, res) => {
 app.get('/cars',async (req,res)=>{
   try{
     const query = await req.db.query(
-      `SELECT * FROM car;`
+      `SELECT * FROM car
+      WHERE car.deleted_flag = 0;`
     )
     res.json({success: true, message: query[0], data: null})
   }
@@ -73,12 +74,25 @@ app.get('/cars',async (req,res)=>{
   }
 });
 
-// Creates a POST endpoint at <WHATEVER_THE_BASE_URL_IS>/students
-app.post('/cars', (req, res) => {
-  console.log('POST to /students', req.body);
-
-  res.json({ success: true });
+// Adds a car to the database based on request body
+app.post('/cars', async (req, res) => {
+  try{
+    const {make,model,year} = req.body;
+    console.log(make,model,year);
+    const query = await req.db.query(
+      `INSERT INTO car (make, model, year)
+      VALUES (:make,:model,:year);`,
+      {
+        make,model,year
+      }
+    )
+    res.json({success: true, message: query[0], data: null})
+  }
+  catch (err){
+    res.json({success: false, message: err, data: null})
+  }
 });
+
 
 app.post('/register', async function (req, res) {
   try {
